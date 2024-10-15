@@ -8,7 +8,10 @@ const products = [];
 
 exports.router = Router()
     .get("/add-product", (req, res) => {
-        res.sendFile(path.join(rootDir, "views", "add-product.html"));
+        res.render("add-product", {
+            pageTitle: "Add product",
+            path: "admin/add-product",
+        });
     })
     .post("/add-product", (req, res) => {
         products.push({ title: req.body.title });
