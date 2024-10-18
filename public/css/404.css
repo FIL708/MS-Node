@@ -1,0 +1,29 @@
+/* 404 Page Styling */
+.error-section {
+    text-align: center;
+    margin: 100px auto;
+}
+
+.error-title {
+    font-size: 48px;
+    color: #d9534f;
+    margin-bottom: 20px;
+}
+
+.error-text {
+    font-size: 20px;
+    margin-bottom: 30px;
+}
+
+.error-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.error-link:hover {
+    background-color: #0056b3;
+}

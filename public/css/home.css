@@ -1,0 +1,14 @@
+/* Home Page Styling */
+.home-section {
+    text-align: center;
+    margin: 50px;
+}
+
+.home-title {
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+.home-text {
+    font-size: 18px;
+}

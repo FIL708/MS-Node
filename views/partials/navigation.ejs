@@ -1,0 +1,30 @@
+</head>
+<body>
+    <div class="wrapper">
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li>
+                <a 
+                    href="/"
+                    class="<%= activePage === "home" ? "nav-item active" : "nav-item" %>">
+                    Home
+                </a>
+            </li>
+            <li>
+                <a 
+                href="/users"
+                class="<%= activePage === "users" ? "nav-item active" : "nav-item" %>">
+                Users
+
+                </a>
+            </li>
+            <li>
+                <a
+                    href="/add-user"
+                    class="<%= activePage === "add-user" ? "nav-item active" : "nav-item" %>">
+                    Add user
+
+                </a>
+            </li>
+        </ul>
+    </nav>

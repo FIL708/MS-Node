@@ -1,0 +1,35 @@
+<%- include('partials/head.ejs') %>
+<!-- ADDITIONAL STYLES HERE -->
+<link rel="stylesheet" href="css/users.css" />
+<%- include('partials/navigation.ejs') %>
+<main class="main">
+    <section class="user-section">
+        <h1 class="user-title">User Page</h1>
+        <% if (usersData.length === 0) { %>
+        <p class="no-users-message">No users found.</p>
+        <% } else { %>
+        <p class="user-description">
+            This is the user page where you can view all users.
+        </p>
+
+        <!-- Example User Cards -->
+        <ul class="user-cards">
+            <% usersData.forEach(user => { %>
+            <li class="user-card">
+                <img src="<%= user.avatar %>" alt="Avatar" class="avatar" />
+                <div class="user-info">
+                    <h3 class="user-name">
+                        <%= `${user.name} ${user.surname}` %>
+                    </h3>
+                    <p class="user-surname">
+                        <%- `${user.id}-${user.surname}` %>
+                    </p>
+                </div>
+            </li>
+            <% }) %>
+        </ul>
+        <% } %>
+        <a href="/add-user" class="add-user-btn">Add User</a>
+    </section>
+</main>
+<%- include('partials/footer.ejs') %>

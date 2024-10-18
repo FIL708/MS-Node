@@ -1,0 +1,40 @@
+<%- include('partials/head.ejs') %>
+<!-- ADDITIONAL STYLES HERE -->
+<link rel="stylesheet" href="css/add-user.css" />
+<%- include('partials/navigation.ejs') %>
+<main class="main">
+    <section class="add-user-section">
+        <h1 class="add-user-title">Add New User</h1>
+        <form class="add-user-form" action="/add-user" method="POST">
+            <label for="name" class="form-label">Name:</label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                class="form-input"
+                required
+            />
+
+            <label for="surname" class="form-label">Surname:</label>
+            <input
+                type="text"
+                id="surname"
+                name="surname"
+                class="form-input"
+                required
+            />
+
+            <label for="avatar" class="form-label">Avatar URL:</label>
+            <input
+                type="text"
+                id="avatar"
+                name="avatar"
+                class="form-input"
+                required
+            />
+
+            <input type="submit" value="Add User" class="form-submit" />
+        </form>
+    </section>
+</main>
+<%- include('partials/footer.ejs') %>
