@@ -6,5 +6,5 @@ const rootDir = require("../utils/path");
 
 module.exports = Router().get("/", (req, res) => {
     console.log(products);
-    res.sendFile(path.join(rootDir, "views", "shop.html"));
+    res.render("shop", { pageTitle: "Shop", products, path: "/" });
 });
