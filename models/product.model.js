@@ -1,46 +1,38 @@
 const fs = require("fs");
 const path = require("path");
 
-const products = [];
-
 class Product {
     constructor(title) {
         this.title = title;
-        this.dataLocation = path.join(
-            path.dirname(require.main.filename),
-            "data",
-            "products.json"
-        );
     }
 
-    save() {
-        const dataLocation = path.join(
-            path.dirname(require.main.filename),
-            "data",
-            "products.json"
-        );
+    static dataLocation = path.join(
+        path.dirname(require.main.filename),
+        "data",
+        "products.json"
+    );
 
-        fs.readFile(dataLocation, (err, content) => {
+    save() {
+        fs.readFile(Product.dataLocation, (err, content) => {
             let products = [];
             if (!err) {
                 products = JSON.parse(content);
             }
             products.push(this);
-            fs.writeFile(dataLocation, JSON.stringify(products), (err) => {
-                console.log(err);
-            });
+            fs.writeFile(
+                Product.dataLocation,
+                JSON.stringify(products),
+                (err) => {
+                    console.error(err);
+                }
+            );
         });
     }
 
     static getAll(cb) {
-        const dataLocation = path.join(
-            path.dirname(require.main.filename),
-            "data",
-            "products.json"
-        );
-
-        fs.readFile(dataLocation, (err, content) => {
+        fs.readFile(Product.dataLocation, (err, content) => {
             if (err) {
+                console.error(err);
                 cb([]);
             }
             cb(JSON.parse(content));
