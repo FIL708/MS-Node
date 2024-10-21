@@ -1,7 +1,7 @@
 const express = require("express");
 
 const routes = require("./routes");
-const notFoundController = require("./controllers/notFound.controller");
+const { getNotFound } = require("./controllers/error.controller");
 
 const app = express();
 
@@ -19,6 +19,6 @@ app.use("/", (req, res, next) => {
 
 app.use(routes);
 
-app.use(notFoundController.get);
+app.use(getNotFound);
 
 app.listen(3000);
