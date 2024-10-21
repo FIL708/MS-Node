@@ -1,7 +1,7 @@
-const path = require("path");
 const express = require("express");
+
 const routes = require("./routes");
-const rootDir = require("./utils/path");
+const notFoundController = require("./controllers/notFound.controller");
 
 const app = express();
 
@@ -19,8 +19,6 @@ app.use("/", (req, res, next) => {
 
 app.use(routes);
 
-app.use((req, res) => {
-    res.status(404).render("404", { pageTitle: "Page not found" });
-});
+app.use(notFoundController.get);
 
 app.listen(3000);

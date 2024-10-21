@@ -1,6 +1,6 @@
 const { Router } = require("express");
 
-const admin = require("./admin");
-const shop = require("./shop");
+const admin = require("./admin.route");
+const shop = require("./shop.route");
 
-module.exports = Router().use("/admin", admin.router).use(shop);
+module.exports = Router().use("/admin", admin).use(shop);
