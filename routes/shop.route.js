@@ -4,10 +4,12 @@ const {
     getIndex,
     getCart,
     getCheckout,
+    getOrders,
 } = require("../controllers/shop.controller");
 
 module.exports = Router()
     .get("/", getIndex)
     .get("/products", getProducts)
     .get("/cart", getCart)
-    .get("/checkout", getCheckout);
+    .get("/checkout", getCheckout)
+    .get("/orders", getOrders);

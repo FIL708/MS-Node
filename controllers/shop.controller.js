@@ -11,14 +11,17 @@ const getProducts = (req, res) => {
 };
 
 const getIndex = (req, res) => {
-    res.render("shop/index", {
-        pageTitle: "Shop",
-        path: "/",
+    Product.getAll((products) => {
+        res.render("shop/index", {
+            pageTitle: "Shop",
+            products,
+            path: "/",
+        });
     });
 };
 const getCart = (req, res) => {
     res.render("shop/cart", {
-        pageTitle: "Cart",
+        pageTitle: "Your Cart",
         path: "/cart",
     });
 };
@@ -29,4 +32,11 @@ const getCheckout = (req, res) => {
     });
 };
 
-module.exports = { getProducts, getIndex, getCart, getCheckout };
+const getOrders = (req, res) => {
+    res.render("shop/orders", {
+        pageTitle: "Your orders",
+        path: "/orders",
+    });
+};
+
+module.exports = { getProducts, getIndex, getCart, getCheckout, getOrders };
