@@ -10,6 +10,12 @@ const getProducts = (req, res) => {
     });
 };
 
+const getProduct = (req, res) => {
+    const { productId } = req.params;
+    console.log(productId);
+    Product.get(productId, (product) => console.log(product));
+};
+
 const getIndex = (req, res) => {
     Product.getAll((products) => {
         res.render("shop/index", {
@@ -39,4 +45,11 @@ const getOrders = (req, res) => {
     });
 };
 
-module.exports = { getProducts, getIndex, getCart, getCheckout, getOrders };
+module.exports = {
+    getProducts,
+    getIndex,
+    getCart,
+    getCheckout,
+    getOrders,
+    getProduct,
+};

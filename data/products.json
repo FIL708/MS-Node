@@ -1,8 +1,9 @@
 [
     {
-        "title": "Book 1",
+        "title": "Book",
         "imageUrl": "https://media.istockphoto.com/id/173015527/photo/a-single-red-book-on-a-white-surface.jpg?s=612x612&w=0&k=20&c=AeKmdZvg2_bRY2Yct7odWhZXav8CgDtLMc_5_pjSItY=",
-        "description": "Some description",
-        "price": "99.99"
+        "description": "Descrioptopoiasdfasdfsegsd",
+        "price": "199.99",
+        "id": "1"
     }
 ]
