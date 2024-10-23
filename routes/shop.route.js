@@ -3,15 +3,19 @@ const {
     getProducts,
     getIndex,
     getCart,
+    postCart,
+    postCartDeleteItem,
     getCheckout,
     getOrders,
-    getProduct
+    getProduct,
 } = require("../controllers/shop.controller");
 
 module.exports = Router()
     .get("/", getIndex)
     .get("/products", getProducts)
-    .get('/products/:productId', getProduct)
+    .get("/products/:productId", getProduct)
     .get("/cart", getCart)
+    .post("/cart", postCart)
+    .post("/cart-delete-item/:productId", postCartDeleteItem)
     .get("/checkout", getCheckout)
-    .get("/orders", getOrders)
+    .get("/orders", getOrders);

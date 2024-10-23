@@ -1,3 +1,4 @@
+const Cart = require("../models/cart.model");
 const Product = require("../models/product.model");
 
 const getProducts = (req, res) => {
@@ -12,8 +13,13 @@ const getProducts = (req, res) => {
 
 const getProduct = (req, res) => {
     const { productId } = req.params;
-    console.log(productId);
-    Product.get(productId, (product) => console.log(product));
+    Product.get(productId, (product) => {
+        res.render("shop/product-details", {
+            product,
+            pageTitle: product.title,
+            path: "/products",
+        });
+    });
 };
 
 const getIndex = (req, res) => {
@@ -25,12 +31,48 @@ const getIndex = (req, res) => {
         });
     });
 };
+
 const getCart = (req, res) => {
-    res.render("shop/cart", {
-        pageTitle: "Your Cart",
-        path: "/cart",
+    Cart.getCart((cart) => {
+        Product.getAll((products) => {
+            const cartProducts = [];
+            for (const product of products) {
+                const cartProductData = cart.products.find(
+                    (prod) => prod.id === product.id
+                );
+                if (cartProductData) {
+                    cartProducts.push({
+                        productData: product,
+                        quantity: cartProductData.quantity,
+                    });
+                }
+            }
+
+            res.render("shop/cart", {
+                pageTitle: "Your Cart",
+                path: "/cart",
+                products: cartProducts,
+            });
+        });
     });
 };
+
+const postCart = (req, res) => {
+    const { productId } = req.body;
+    Product.get(productId, (product) => {
+        Cart.addProduct({ id: product.id, productPrice: product.price });
+    });
+    res.redirect("/cart");
+};
+
+const postCartDeleteItem = (req, res) => {
+    const { productId } = req.params;
+    Product.get(productId, (product) => {
+        Cart.deleteProduct(productId, product.price);
+        res.redirect('/cart')
+    });
+};
+
 const getCheckout = (req, res) => {
     res.render("shop/checkout", {
         pageTitle: "Checkout",
@@ -49,6 +91,8 @@ module.exports = {
     getProducts,
     getIndex,
     getCart,
+    postCart,
+    postCartDeleteItem,
     getCheckout,
     getOrders,
     getProduct,
