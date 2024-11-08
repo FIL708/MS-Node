@@ -17,8 +17,10 @@ const postAddProduct = (req, res) => {
         description,
         price,
     });
-    product.save();
-    res.redirect("/admin/products");
+    product
+        .save()
+        .then(() => res.redirect("/"))
+        .catch((err) => console.log((err) => console.log(err)));
 };
 
 const getEditProduct = (req, res) => {

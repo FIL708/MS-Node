@@ -1,7 +1,11 @@
+require("dotenv").config();
+
 const express = require("express");
 
 const routes = require("./routes");
 const { getNotFound } = require("./controllers/error.controller");
+
+const { PORT } = process.env;
 
 const app = express();
 
@@ -21,4 +25,7 @@ app.use(routes);
 
 app.use(getNotFound);
 
-app.listen(3000);
+app.listen(PORT, () => {
+    console.log(`\x1b[34m Server is listening on port ${PORT} \x1b[0m`);
+    console.log(`\x1b[34m http://localhost:${PORT} \x1b[0m`);
+});
