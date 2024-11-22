@@ -1,4 +1,5 @@
 const Product = require("../models/product.model");
+const log = require("../utils/logger");
 
 const getAddProduct = (req, res) => {
     res.render("admin/edit-product", {
@@ -8,28 +9,32 @@ const getAddProduct = (req, res) => {
     });
 };
 
-const postAddProduct = (req, res) => {
-    const { title, imageUrl, price, description } = req.body;
-    const product = new Product({
-        id: null,
-        title,
-        imageUrl,
-        description,
-        price,
-    });
-    product
-        .save()
-        .then(() => res.redirect("/"))
-        .catch((err) => console.log((err) => console.log(err)));
+const postAddProduct = async (req, res) => {
+    const { user, body } = req;
+    const { title, imageUrl, price, description } = body;
+
+    try {
+        await user.createProduct({
+            title,
+            imageUrl,
+            price,
+            description,
+        });
+    } catch (error) {
+        log(error, "error");
+    }
+    res.redirect("/admin/products");
 };
 
-const getEditProduct = (req, res) => {
+const getEditProduct = async (req, res) => {
     const { edit } = req.query;
     const { productId } = req.params;
     if (!edit) {
         res.redirect("/");
     }
-    Product.get(productId, (product) => {
+    try {
+        const product = await Product.findByPk(productId);
+
         if (!product) {
             return res.redirect("/");
         }
@@ -40,40 +45,49 @@ const getEditProduct = (req, res) => {
             editing: edit,
             product,
         });
-    });
+    } catch (error) {
+        log(error, "error");
+    }
 };
 
-const postEditProduct = (req, res) => {
+const postEditProduct = async (req, res) => {
     const { productId, title, imageUrl, price, description } = req.body;
 
-    const updatedProduct = new Product({
-        id: productId,
-        title,
-        imageUrl,
-        price,
-        description,
-    });
-
-    updatedProduct.save();
+    try {
+        await Product.update(
+            { title, imageUrl, price, description },
+            { where: { id: productId } }
+        );
+    } catch (error) {
+        log(error, "error");
+    }
 
     res.redirect("/admin/products");
 };
 
-const postDeleteProduct = (req, res) => {
+const postDeleteProduct = async (req, res) => {
     const { productId } = req.params;
-    console.log(productId);
-    Product.delete(productId);
+
+    try {
+        Product.destroy({ where: { id: productId } });
+    } catch (error) {
+        log(error, "error");
+    }
     res.redirect("/admin/products");
 };
 
-const getProducts = (req, res) => {
-    Product.getAll((products) => {
+const getProducts = async (req, res) => {
+    try {
+        const products = await req.user.getProducts();
+
         res.render("admin/products", {
             pageTitle: "Admin Products",
             products,
-            path: "/",
+            path: "/admin/products",
         });
-    });
+    } catch (error) {
+        log(error, "error");
+    }
 };
 
 module.exports = {
