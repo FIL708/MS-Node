@@ -1,10 +1,10 @@
-// const Order = require("../models/order.model");
 const Product = require("../models/product.model");
 const log = require("../utils/logger");
+const Order = require("../models/order");
 
 const getProducts = async (req, res) => {
     try {
-        const products = await Product.getAll();
+        const products = await Product.find().populate("userId");
 
         res.render("shop/products", {
             pageTitle: "Products",
@@ -34,7 +34,7 @@ const getProduct = async (req, res) => {
 
 const getIndex = async (req, res) => {
     try {
-        const products = await Product.getAll();
+        const products = await Product.find();
 
         res.render("shop/index", {
             pageTitle: "Shop",
@@ -49,7 +49,8 @@ const getIndex = async (req, res) => {
 const getCart = async (req, res) => {
     const { user } = req;
     try {
-        const productsInCart = await user.getCart();
+        const { cart } = await user.populate("cart.items.productId");
+        const productsInCart = cart.items;
 
         res.render("shop/cart", {
             path: "cart",
@@ -99,12 +100,12 @@ const getCheckout = (req, res) => {
 const getOrders = async (req, res) => {
     const { user } = req;
     try {
-        const orderedProducts = await user.getOrders();
+        const orders = await Order.find({ "user.userId": user._id });
 
         res.render("shop/orders", {
             pageTitle: "Your orders",
             path: "/orders",
-            orders: orderedProducts,
+            orders,
         });
     } catch (error) {
         log(error, "error");
@@ -115,7 +116,18 @@ const postOrder = async (req, res) => {
     const { user } = req;
 
     try {
-        await user.addOrder();
+        const { cart } = await user.populate("cart.items.productId");
+
+        const productsInCart = cart.items.map((i) => {
+            return { quantity: i.quantity, product: { ...i.productId._doc } };
+        });
+
+        await new Order({
+            user: { name: user.name, userId: user._id },
+            products: productsInCart,
+        }).save();
+
+        await user.clearCart();
 
         res.redirect("/orders");
     } catch (error) {

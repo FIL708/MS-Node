@@ -8,19 +8,19 @@ const TYPES = {
 const log = (message, type) => {
     switch (type.toUpperCase()) {
         case "INFO":
-            console.log(`${TYPES.INFO} ${message} \x1b[0m`);
+            console.log(`${TYPES.INFO}█ INFO █ ${message} \x1b[0m`);
             break;
         case "SUCCESS":
-            console.log(`${TYPES.SUCCESS} ${message} \x1b[0m`);
+            console.log(`${TYPES.SUCCESS}█ SUCC █ ${message} \x1b[0m`);
             break;
         case "WARNING":
-            console.log(`${TYPES.WARNING} ${message} \x1b[0m`);
+            console.log(`${TYPES.WARNING}█ WARN █ ${message} \x1b[0m`);
             break;
         case "ERROR":
             if (message instanceof Error) {
-                console.log(`${TYPES.ERROR} [${message.stack}] \x1b[0m`);
+                console.log(`${TYPES.ERROR}█ ERR █ [${message.stack}] \x1b[0m`);
             } else {
-                console.log(`${TYPES.ERROR} ${message} \x1b[0m`);
+                console.log(`${TYPES.ERROR}█ ERR █ ${message} \x1b[0m`);
             }
 
             break;

@@ -12,14 +12,13 @@ const getAddProduct = (req, res) => {
 const postAddProduct = async (req, res) => {
     const { user, body } = req;
     const { title, price, description, imageUrl } = body;
-    const product = new Product(
+    const product = new Product({
         title,
         price,
         description,
         imageUrl,
-        null,
-        user._id
-    );
+        userId: user._id,
+    });
     try {
         await product.save();
     } catch (error) {
@@ -56,13 +55,14 @@ const postEditProduct = async (req, res) => {
     const { productId, title, imageUrl, price, description } = req.body;
 
     try {
-        await new Product(
-            title,
-            price,
-            description,
-            imageUrl,
-            productId
-        ).save();
+        const product = await Product.findById(productId);
+
+        product.title = title;
+        product.imageUrl = imageUrl;
+        product.price = price;
+        product.description = description;
+
+        await product.save();
     } catch (error) {
         log(error, "error");
     }
@@ -74,7 +74,7 @@ const postDeleteProduct = async (req, res) => {
     const { productId } = req.params;
 
     try {
-        await Product.deleteById(productId);
+        await Product.findByIdAndDelete(productId);
     } catch (error) {
         log(error, "error");
     }
@@ -83,7 +83,7 @@ const postDeleteProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
     try {
-        const products = await Product.getAll();
+        const products = await Product.find();
 
         res.render("admin/products", {
             pageTitle: "Admin Products",
