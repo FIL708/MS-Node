@@ -11,15 +11,17 @@ const getAddProduct = (req, res) => {
 
 const postAddProduct = async (req, res) => {
     const { user, body } = req;
-    const { title, imageUrl, price, description } = body;
-
+    const { title, price, description, imageUrl } = body;
+    const product = new Product(
+        title,
+        price,
+        description,
+        imageUrl,
+        null,
+        user._id
+    );
     try {
-        await user.createProduct({
-            title,
-            imageUrl,
-            price,
-            description,
-        });
+        await product.save();
     } catch (error) {
         log(error, "error");
     }
@@ -33,7 +35,7 @@ const getEditProduct = async (req, res) => {
         res.redirect("/");
     }
     try {
-        const product = await Product.findByPk(productId);
+        const product = await Product.findById(productId);
 
         if (!product) {
             return res.redirect("/");
@@ -54,10 +56,13 @@ const postEditProduct = async (req, res) => {
     const { productId, title, imageUrl, price, description } = req.body;
 
     try {
-        await Product.update(
-            { title, imageUrl, price, description },
-            { where: { id: productId } }
-        );
+        await new Product(
+            title,
+            price,
+            description,
+            imageUrl,
+            productId
+        ).save();
     } catch (error) {
         log(error, "error");
     }
@@ -69,7 +74,7 @@ const postDeleteProduct = async (req, res) => {
     const { productId } = req.params;
 
     try {
-        Product.destroy({ where: { id: productId } });
+        await Product.deleteById(productId);
     } catch (error) {
         log(error, "error");
     }
@@ -78,7 +83,7 @@ const postDeleteProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
     try {
-        const products = await req.user.getProducts();
+        const products = await Product.getAll();
 
         res.render("admin/products", {
             pageTitle: "Admin Products",

@@ -12,8 +12,8 @@
                 <li class="cart__item">
                     <img class="cart__image" src="<%= p.imageUrl %>" alt="<%= p.title %>">
                     <h1><%= p.title %></h1>
-                    <h2>Quantity: <%= p.cartItem.quantity %></h2>
-                    <form action="/cart-delete-item/<%= p.id %>" method="post">
+                    <h2>Quantity: <%= p.quantity %></h2>
+                    <form action="/cart-delete-item/<%= p._id %>" method="post">
                         <button class="btn" type="submit">Delete</button>
                     </form>
                 </li>
