@@ -1,6 +1,8 @@
 require("dotenv").config();
 
 const express = require("express");
+const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
 
 const routes = require("./routes");
 const { getNotFound } = require("./controllers/error.controller");
@@ -20,24 +22,34 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static("public"));
 
+const store = new MongoDBStore({ uri: MONGO_URL, collection: "sessions" });
+app.use(
+    session({
+        secret: "some-secret",
+        resave: false,
+        saveUninitialized: false,
+        store,
+    })
+);
+
 app.use(async (req, res, next) => {
+    const { session } = req;
     try {
-        const user = await User.findOne({ name: "test-user" });
-        req.user = user;
+        if (session.isLoggedIn) {
+            const user = await User.findById(session.user._id);
+
+            req.user = user;
+        }
+
         next();
     } catch (error) {
         log(error, "error");
     }
 });
 
-app.use("/", (req, res, next) => {
-    next();
-});
-
 app.use(routes);
 
 app.use(getNotFound);
-
 
 (async () => {
     try {
@@ -49,7 +61,7 @@ app.use(getNotFound);
         );
 
         const user = await User.findOne({ name: "test-user" });
-        
+
         if (!user) {
             await new User({
                 name: "test-user",

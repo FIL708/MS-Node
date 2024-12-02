@@ -18,9 +18,9 @@ const log = (message, type) => {
             break;
         case "ERROR":
             if (message instanceof Error) {
-                console.log(`${TYPES.ERROR}█ ERR █ [${message.stack}] \x1b[0m`);
+                console.log(`${TYPES.ERROR}█ ERR  █ [${message.stack}] \x1b[0m`);
             } else {
-                console.log(`${TYPES.ERROR}█ ERR █ ${message} \x1b[0m`);
+                console.log(`${TYPES.ERROR}█ ERR  █ ${message} \x1b[0m`);
             }
 
             break;

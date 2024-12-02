@@ -6,18 +6,19 @@ const getAddProduct = (req, res) => {
         pageTitle: "Add products",
         path: "/admin/add-product",
         editing: false,
+        isAuthenticated: req.session.isLoggedIn,
     });
 };
 
 const postAddProduct = async (req, res) => {
-    const { user, body } = req;
+    const { session, body } = req;
     const { title, price, description, imageUrl } = body;
     const product = new Product({
         title,
         price,
         description,
         imageUrl,
-        userId: user._id,
+        userId: session.user._id,
     });
     try {
         await product.save();
@@ -45,6 +46,7 @@ const getEditProduct = async (req, res) => {
             path: "/admin/edit-product",
             editing: edit,
             product,
+            isAuthenticated: req.session.isLoggedIn,
         });
     } catch (error) {
         log(error, "error");
@@ -89,6 +91,7 @@ const getProducts = async (req, res) => {
             pageTitle: "Admin Products",
             products,
             path: "/admin/products",
+            isAuthenticated: req.session.isLoggedIn,
         });
     } catch (error) {
         log(error, "error");
