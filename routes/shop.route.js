@@ -10,14 +10,14 @@ const {
     getProduct,
     postOrder,
 } = require("../controllers/shop.controller");
+const isAuth = require("../middleware/is-auth.middleware");
 
 module.exports = Router()
     .get("/", getIndex)
     .get("/products", getProducts)
     .get("/products/:productId", getProduct)
-    .get("/cart", getCart)
-    .post("/cart", postCart)
-    .post("/cart-delete-item/:productId", postCartDeleteItem)
-    // .get("/checkout", getCheckout)
-    .get("/orders", getOrders)
-    .post("/create-order", postOrder);
+    .get("/cart", isAuth, getCart)
+    .post("/cart", isAuth, postCart)
+    .post("/cart-delete-item/:productId", isAuth, postCartDeleteItem)
+    .get("/orders", isAuth, getOrders)
+    .post("/create-order", isAuth, postOrder);

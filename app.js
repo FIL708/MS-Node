@@ -3,12 +3,14 @@ require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
+const mongoose = require("mongoose");
+const csrf = require("csurf");
+const flash = require("connect-flash");
 
 const routes = require("./routes");
 const { getNotFound } = require("./controllers/error.controller");
 const log = require("./utils/logger");
 const User = require("./models/user.model");
-const mongoose = require("mongoose");
 
 const { PORT, MONGO_URL } = process.env;
 
@@ -32,6 +34,11 @@ app.use(
     })
 );
 
+const csrfProtection = csrf();
+
+app.use(csrfProtection);
+app.use(flash());
+
 app.use(async (req, res, next) => {
     const { session } = req;
     try {
@@ -46,6 +53,11 @@ app.use(async (req, res, next) => {
         log(error, "error");
     }
 });
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    res.locals.csrf = req.csrfToken();
+    next();
+});
 
 app.use(routes);
 
@@ -59,15 +71,6 @@ app.use(getNotFound);
             "Database connection has been established successfully.",
             "success"
         );
-
-        const user = await User.findOne({ name: "test-user" });
-
-        if (!user) {
-            await new User({
-                name: "test-user",
-                email: "test@user.com",
-            }).save();
-        }
 
         app.listen(PORT, () => {
             log(`Server is listening on port ${PORT}`, "info");

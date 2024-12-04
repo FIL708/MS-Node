@@ -11,7 +11,7 @@
             <% } %>
             <form
                 class="login-form"
-                action="/login"
+                action="/reset"
                 method="POST"
             >
                 <input type="hidden" name="_csrf" value="<%= csrf %>" />
@@ -21,15 +21,8 @@
                     <input type="email" name="email" id="email" value="" />
                 </div>
 
-                <div class="form-control">
-                    <label for="password">Password</label>
-                    <input type="password" name="password" id="password" value="" />
-                </div>
 
-                <button class="btn" type="submit">Login</button>
+                <button class="btn" type="submit">Reset</button>
             </form>
-            <div class="centered">
-                <a href="/reset">Reset Password</a>
-            </div>
         </main>
 <%- include('../partials/end.ejs') %>

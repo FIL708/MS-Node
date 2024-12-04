@@ -1,12 +1,11 @@
 const Product = require("../models/product.model");
 const log = require("../utils/logger");
 
-const getAddProduct = (req, res) => {
+const getAddProduct = async (req, res) => {
     res.render("admin/edit-product", {
         pageTitle: "Add products",
         path: "/admin/add-product",
         editing: false,
-        isAuthenticated: req.session.isLoggedIn,
     });
 };
 
@@ -46,7 +45,6 @@ const getEditProduct = async (req, res) => {
             path: "/admin/edit-product",
             editing: edit,
             product,
-            isAuthenticated: req.session.isLoggedIn,
         });
     } catch (error) {
         log(error, "error");
@@ -58,6 +56,10 @@ const postEditProduct = async (req, res) => {
 
     try {
         const product = await Product.findById(productId);
+
+        if (productId.userId.toString() !== req.user._id.toString()) {
+            return res.redirect("/");
+        }
 
         product.title = title;
         product.imageUrl = imageUrl;
@@ -76,7 +78,7 @@ const postDeleteProduct = async (req, res) => {
     const { productId } = req.params;
 
     try {
-        await Product.findByIdAndDelete(productId);
+        await Product.deleteOne({ _id: productId, userId: req.user._id });
     } catch (error) {
         log(error, "error");
     }
@@ -85,13 +87,12 @@ const postDeleteProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
     try {
-        const products = await Product.find();
+        const products = await Product.find({ userId: req.user._id });
 
         res.render("admin/products", {
             pageTitle: "Admin Products",
             products,
             path: "/admin/products",
-            isAuthenticated: req.session.isLoggedIn,
         });
     } catch (error) {
         log(error, "error");

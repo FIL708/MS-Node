@@ -7,8 +7,10 @@ const {
     postEditProduct,
     postDeleteProduct,
 } = require("../controllers/admin.controller");
+const isAuth = require("../middleware/is-auth.middleware");
 
 module.exports = Router()
+    .use(isAuth)
     .get("/add-product", getAddProduct)
     .post("/add-product", postAddProduct)
     .get("/edit-product/:productId", getEditProduct)
