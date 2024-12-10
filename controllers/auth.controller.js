@@ -1,5 +1,6 @@
-const bcrypt = require("bcryptjs");
 const { randomBytes } = require("node:crypto");
+const bcrypt = require("bcryptjs");
+const { validationResult } = require("express-validator");
 
 const User = require("../models/user.model");
 const log = require("../utils/logger");
@@ -9,60 +10,90 @@ const getLogin = (req, res) => {
     res.render("auth/login", {
         path: "/login",
         pageTitle: "Login",
-        errorMsg: req.flash("error"),
+        errorMsg: null,
+        lastInput: { email: "" },
+        validationErrors: [],
     });
 };
 
 const postLogin = async (req, res) => {
-    const { email, password } = req.body;
     try {
+        const { email, password } = req.body;
+
         const user = await User.findOne({ email });
 
         if (!user) {
-            req.flash("error", "Invalid email or password.");
-            return res.redirect("/login");
+            return res.status(422).render("auth/login", {
+                path: "/login",
+                pageTitle: "Login",
+                errorMsg: "Invalid email or password.",
+                lastInput: { email },
+            });
         }
 
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
         if (!isPasswordCorrect) {
-            req.flash("error", "Invalid email or password.");
-            return res.redirect("/login");
+            return res.status(422).render("auth/login", {
+                path: "/login",
+                pageTitle: "Login",
+                errorMsg: "Invalid email or password.",
+                lastInput: { email },
+            });
         }
 
         req.session.isLoggedIn = true;
         req.session.user = user;
         await req.session.save();
 
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(422).render("auth/login", {
+                path: "/login",
+                pageTitle: "Login",
+                errorMsg: errors.array()[0].msg,
+                lastInput: { email },
+            });
+        }
         res.redirect("/");
     } catch (error) {
         log(error, "error");
     }
 };
 
-const postLogout = (req, res) => {
-    req.session.destroy((error) => {
-        log(error, "error");
+const postLogout = async (req, res) => {
+    try {
+        await req.session.destroy();
         res.redirect("/");
-    });
+    } catch (error) {
+        log(error, "error");
+    }
 };
 
 const getSignup = (req, res) => {
     res.render("auth/signup", {
         path: "/signup",
         pageTitle: "Sign Up",
-        errorMsg: req.flash("error"),
+        errorMsg: null,
+        lastInput: { email: "" },
+        validationErrors: [],
     });
 };
 
 const postSignup = async (req, res) => {
     const { email, password, confirmPassword } = req.body;
     try {
-        const isUserExisted = await User.findOne({ email });
+        const errors = validationResult(req);
 
-        if (isUserExisted) {
-            req.flash("error", "User already exists.");
-            return res.redirect("/signup");
+        if (!errors.isEmpty()) {
+            return res.status(422).render("auth/signup", {
+                path: "/signup",
+                pageTitle: "Sign Up",
+                errorMsg: errors.array()[0].msg,
+                lastInput: { email },
+                validationErrors: errors.array(),
+            });
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
@@ -154,7 +185,7 @@ const getNewPassword = async (req, res) => {
 
 const postNewPassword = async (req, res) => {
     const { userId, password, passwordToken } = req.body;
-    
+
     try {
         const user = await User.findOne({
             resetToken: passwordToken,
@@ -164,13 +195,13 @@ const postNewPassword = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        user.password = hashedPassword
-        user.resetToken = null
-        user.resetTokenExpiration = null
+        user.password = hashedPassword;
+        user.resetToken = null;
+        user.resetTokenExpiration = null;
 
-        await user.save()
+        await user.save();
 
-        return res.redirect('/login')
+        return res.redirect("/login");
     } catch (error) {
         log(error, "error");
     }

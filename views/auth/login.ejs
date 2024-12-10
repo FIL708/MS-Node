@@ -6,7 +6,7 @@
         <%- include('../partials/navigation.ejs') %>
 
         <main>
-            <% if (errorMsg.length) { %>
+            <% if (errorMsg) { %>
                 <div class="user-message user-message--error"><%= errorMsg %></div>
             <% } %>
             <form
@@ -18,7 +18,7 @@
 
                 <div class="form-control">
                     <label for="email">Email</label>
-                    <input type="email" name="email" id="email" value="" />
+                    <input type="email" name="email" id="email" value="<%= lastInput.email %>" />
                 </div>
 
                 <div class="form-control">

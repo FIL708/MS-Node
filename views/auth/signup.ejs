@@ -6,29 +6,47 @@
         <%- include('../partials/navigation.ejs') %>
 
         <main>
-            <% if (errorMsg.length) { %>
+            <% if (errorMsg) { %>
                 <div class="user-message user-message--error"><%= errorMsg %></div>
             <% } %>
             <form
                 class="login-form"
                 action="/signup"
                 method="POST"
+                novalidate
             >
                 <input type="hidden" name="_csrf" value="<%= csrf %>" />
 
                 <div class="form-control">
                     <label for="email">Email</label>
-                    <input type="email" name="email" id="email" value="" />
+                    <input
+                        type="email"
+                        name="email"
+                        id="email"
+                        value="<%= lastInput.email %>"
+                        class="<%= validationErrors.find(e => e.path === 'email') ? "invalid" : "" %>"
+                    />
                 </div>
 
                 <div class="form-control">
                     <label for="password">Password</label>
-                    <input type="password" name="password" id="password" value="" />
+                    <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        value=""
+                        class="<%= validationErrors.find(e => e.path === 'password') ? "invalid" : "" %>"
+                    />
                 </div>
 
                 <div class="form-control">
                     <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" name="confirmPassword" id="confirmPassword" value="" />
+                    <input 
+                        class="<%= validationErrors.find(e => e.path === 'confirmPassword') ? 'invalid' : '' %>"
+                        type="password" 
+                        name="confirmPassword" 
+                        id="confirmPassword" 
+                        value="<%= lastInput.confirmPassword %>">
                 </div>
 
                 <button class="btn" type="submit">Signup</button>

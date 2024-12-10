@@ -1,3 +1,4 @@
+const { validationResult } = require("express-validator");
 const Product = require("../models/product.model");
 const log = require("../utils/logger");
 
@@ -6,12 +7,34 @@ const getAddProduct = async (req, res) => {
         pageTitle: "Add products",
         path: "/admin/add-product",
         editing: false,
+        hasErrors: false,
+        errorMsg: null,
+        validationErrors: [],
     });
 };
 
 const postAddProduct = async (req, res) => {
     const { session, body } = req;
     const { title, price, description, imageUrl } = body;
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).render("admin/edit-product", {
+            pageTitle: "Add product",
+            path: "/admin/add-product",
+            editing: false,
+            hasErrors: true,
+            product: {
+                title,
+                price,
+                description,
+                imageUrl,
+            },
+            errorMsg: errors.array()[0].msg,
+            validationErrors: errors.array(),
+        });
+    }
+
     const product = new Product({
         title,
         price,
@@ -19,12 +42,13 @@ const postAddProduct = async (req, res) => {
         imageUrl,
         userId: session.user._id,
     });
+
     try {
         await product.save();
+        res.redirect("/admin/products");
     } catch (error) {
         log(error, "error");
     }
-    res.redirect("/admin/products");
 };
 
 const getEditProduct = async (req, res) => {
@@ -45,6 +69,9 @@ const getEditProduct = async (req, res) => {
             path: "/admin/edit-product",
             editing: edit,
             product,
+            hasErrors: false,
+            errorMsg: null,
+            validationErrors: [],
         });
     } catch (error) {
         log(error, "error");
@@ -53,6 +80,26 @@ const getEditProduct = async (req, res) => {
 
 const postEditProduct = async (req, res) => {
     const { productId, title, imageUrl, price, description } = req.body;
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).render("admin/edit-product", {
+            pageTitle: "Add product",
+            path: "/admin/edit-product",
+            editing: false,
+            hasErrors: true,
+            product: {
+                title,
+                price,
+                description,
+                imageUrl,
+                _id: productId,
+            },
+            errorMsg: errors.array()[0].msg,
+            validationErrors: errors.array(),
+        });
+    }
 
     try {
         const product = await Product.findById(productId);
@@ -93,6 +140,7 @@ const getProducts = async (req, res) => {
             pageTitle: "Admin Products",
             products,
             path: "/admin/products",
+            hasErrors: false,
         });
     } catch (error) {
         log(error, "error");

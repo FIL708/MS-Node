@@ -1,4 +1,5 @@
 const { Router } = require("express");
+
 const {
     getLogin,
     postLogin,
@@ -10,13 +11,17 @@ const {
     getNewPassword,
     postNewPassword,
 } = require("../controllers/auth.controller");
+const {
+    postSignupValidator,
+    postLoginValidator,
+} = require("../validators/auth.validator");
 
 module.exports = Router()
     .get("/login", getLogin)
-    .post("/login", postLogin)
+    .post("/login", postLoginValidator, postLogin)
     .post("/logout", postLogout)
     .get("/signup", getSignup)
-    .post("/signup", postSignup)
+    .post("/signup", postSignupValidator, postSignup)
     .get("/reset", getReset)
     .post("/reset", postReset)
     .get("/new-password/:token", getNewPassword)
