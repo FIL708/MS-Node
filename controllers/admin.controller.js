@@ -48,6 +48,9 @@ const postAddProduct = async (req, res) => {
         res.redirect("/admin/products");
     } catch (error) {
         log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
     }
 };
 
@@ -75,6 +78,9 @@ const getEditProduct = async (req, res) => {
         });
     } catch (error) {
         log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
     }
 };
 
@@ -116,6 +122,9 @@ const postEditProduct = async (req, res) => {
         await product.save();
     } catch (error) {
         log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
     }
 
     res.redirect("/admin/products");
@@ -128,6 +137,9 @@ const postDeleteProduct = async (req, res) => {
         await Product.deleteOne({ _id: productId, userId: req.user._id });
     } catch (error) {
         log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
     }
     res.redirect("/admin/products");
 };
@@ -144,6 +156,9 @@ const getProducts = async (req, res) => {
         });
     } catch (error) {
         log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
     }
 };
 

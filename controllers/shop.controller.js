@@ -13,6 +13,9 @@ const getProducts = async (req, res) => {
         });
     } catch (error) {
         log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
     }
 };
 
@@ -29,6 +32,9 @@ const getProduct = async (req, res) => {
         });
     } catch (error) {
         log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
     }
 };
 
@@ -43,6 +49,9 @@ const getIndex = async (req, res) => {
         });
     } catch (error) {
         log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
     }
 };
 
@@ -59,6 +68,9 @@ const getCart = async (req, res) => {
         });
     } catch (error) {
         log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
     }
 };
 
@@ -74,6 +86,9 @@ const postCart = async (req, res) => {
         res.redirect("/cart");
     } catch (error) {
         log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
     }
 };
 
@@ -87,14 +102,10 @@ const postCartDeleteItem = async (req, res) => {
         res.redirect("/cart");
     } catch (error) {
         log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
     }
-};
-
-const getCheckout = (req, res) => {
-    res.render("shop/checkout", {
-        pageTitle: "Checkout",
-        path: "/checkout",
-    });
 };
 
 const getOrders = async (req, res) => {
@@ -110,6 +121,9 @@ const getOrders = async (req, res) => {
         });
     } catch (error) {
         log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
     }
 };
 
@@ -133,6 +147,9 @@ const postOrder = async (req, res) => {
         res.redirect("/orders");
     } catch (error) {
         log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
     }
 };
 
@@ -142,7 +159,6 @@ module.exports = {
     getCart,
     postCart,
     postCartDeleteItem,
-    // getCheckout,
     getOrders,
     getProduct,
     postOrder,
