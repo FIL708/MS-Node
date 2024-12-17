@@ -45,9 +45,6 @@ app.use(async (req, res, next) => {
         return next();
     }
     try {
-        if (!session.isLoggedIn) {
-            return next();
-        }
         const user = await User.findById(session.user._id);
         if (!user) {
             return next();

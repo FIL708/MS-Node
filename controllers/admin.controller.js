@@ -54,7 +54,7 @@ const postAddProduct = async (req, res, next) => {
     }
 };
 
-const getEditProduct = async (req, res) => {
+const getEditProduct = async (req, res, next) => {
     const { edit } = req.query;
     const { productId } = req.params;
     if (!edit) {
