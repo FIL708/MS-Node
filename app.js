@@ -16,15 +16,17 @@ const { PORT, MONGO_URL } = process.env;
 
 const app = express();
 
+const store = new MongoDBStore({ uri: MONGO_URL, collection: "sessions" });
+
+const csrfProtection = csrf();
+
 app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
 app.use(express.static("public"));
 
-const store = new MongoDBStore({ uri: MONGO_URL, collection: "sessions" });
 app.use(
     session({
         secret: "some-secret",
@@ -34,24 +36,27 @@ app.use(
     })
 );
 
-const csrfProtection = csrf();
-
 app.use(csrfProtection);
 app.use(flash());
 
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    res.locals.csrf = req.csrfToken();
+    next();
+});
+
 app.use(async (req, res, next) => {
     const { session } = req;
-    if (req.session.user?._id) {
+
+    if (!session.user || !session.isLoggedIn) {
         return next();
     }
     try {
-        if (!session.isLoggedIn) {
-            return next();
-        }
         const user = await User.findById(session.user._id);
         if (!user) {
             return next();
         }
+
         req.user = user;
 
         next();
@@ -60,20 +65,18 @@ app.use(async (req, res, next) => {
     }
 });
 
-app.use((req, res, next) => {
-    res.locals.isAuthenticated = req.session.isLoggedIn;
-    res.locals.csrf = req.csrfToken();
-    next();
-});
-
 app.use(routes);
 
-app.get(get500);
+app.get("/500", get500);
 
 app.use(getNotFound);
 
-app.use((error, req, res, next) => {
-    res.redirect("/500");
+app.use((req, res) => {
+    res.status(500).render("500", {
+        pageTitle: "Error!",
+        path: "/500",
+        isAuthenticated: req.session.isLoggedIn,
+    });
 });
 
 (async () => {

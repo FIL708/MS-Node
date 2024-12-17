@@ -13,6 +13,7 @@
                 class="product-form"
                 action="/admin/<%= editing ? "edit-product" : 'add-product' %>"
                 method="POST"
+                enctype="multipart/form-data"
             >
                 <input type="hidden" name="_csrf" value="<%= csrf %>" />
 
@@ -27,7 +28,7 @@
                     />
                 </div>
 
-                <div class="form-control">
+                <!-- <div class="form-control">
                     <label for="imageUrl">Image URL</label>
                     <input
                         type="text"
@@ -35,6 +36,14 @@
                         id="imageUrl"
                         value="<%= (editing || hasErrors) ? product.imageUrl : '' %>"
                         class="<%= validationErrors.find(e => e.path === 'imageUrl') ? "invalid" : "" %>"
+                    />
+                </div> -->
+                <div class="form-control">
+                    <label for="image">Image</label>
+                    <input
+                        type="file"
+                        name="image"
+                        id="image"
                     />
                 </div>
 

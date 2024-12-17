@@ -16,9 +16,21 @@ const getLogin = (req, res) => {
     });
 };
 
-const postLogin = async (req, res) => {
+const postLogin = async (req, res, next) => {
     try {
         const { email, password } = req.body;
+
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(422).render("auth/login", {
+                path: "/login",
+                pageTitle: "Login",
+                errorMsg: errors.array()[0].msg,
+                lastInput: { email },
+                validationErrors: errors.array(),
+            });
+        }
 
         const user = await User.findOne({ email });
 
@@ -28,6 +40,7 @@ const postLogin = async (req, res) => {
                 pageTitle: "Login",
                 errorMsg: "Invalid email or password.",
                 lastInput: { email },
+                validationErrors: [],
             });
         }
 
@@ -39,6 +52,7 @@ const postLogin = async (req, res) => {
                 pageTitle: "Login",
                 errorMsg: "Invalid email or password.",
                 lastInput: { email },
+                validationErrors: [],
             });
         }
 
@@ -46,16 +60,6 @@ const postLogin = async (req, res) => {
         req.session.user = user;
         await req.session.save();
 
-        const errors = validationResult(req);
-
-        if (!errors.isEmpty()) {
-            return res.status(422).render("auth/login", {
-                path: "/login",
-                pageTitle: "Login",
-                errorMsg: errors.array()[0].msg,
-                lastInput: { email },
-            });
-        }
         res.redirect("/");
     } catch (error) {
         log(error, "error");
@@ -65,7 +69,7 @@ const postLogin = async (req, res) => {
     }
 };
 
-const postLogout = async (req, res) => {
+const postLogout = async (req, res, next) => {
     try {
         await req.session.destroy();
         res.redirect("/");
@@ -87,7 +91,7 @@ const getSignup = (req, res) => {
     });
 };
 
-const postSignup = async (req, res) => {
+const postSignup = async (req, res, next) => {
     const { email, password, confirmPassword } = req.body;
     try {
         const errors = validationResult(req);
@@ -135,7 +139,7 @@ const getReset = (req, res) => {
     });
 };
 
-const postReset = (req, res) => {
+const postReset = (req, res, next) => {
     const { email } = req.body;
     randomBytes(32, (error, buffer) => {
         if (error) {
@@ -177,7 +181,7 @@ const postReset = (req, res) => {
     });
 };
 
-const getNewPassword = async (req, res) => {
+const getNewPassword = async (req, res, next) => {
     const { token } = req.params;
     try {
         const user = await User.findOne({
@@ -200,7 +204,7 @@ const getNewPassword = async (req, res) => {
     }
 };
 
-const postNewPassword = async (req, res) => {
+const postNewPassword = async (req, res, next) => {
     const { userId, password, passwordToken } = req.body;
 
     try {

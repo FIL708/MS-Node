@@ -13,9 +13,12 @@ const getAddProduct = async (req, res) => {
     });
 };
 
-const postAddProduct = async (req, res) => {
+const postAddProduct = async (req, res, next) => {
+    console.log('HIIIIIIT');
+    
     const { session, body } = req;
-    const { title, price, description, imageUrl } = body;
+    const { title, price, description } = body;
+    const imageUrl = req.file;
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -54,7 +57,7 @@ const postAddProduct = async (req, res) => {
     }
 };
 
-const getEditProduct = async (req, res) => {
+const getEditProduct = async (req, res, next) => {
     const { edit } = req.query;
     const { productId } = req.params;
     if (!edit) {
@@ -84,7 +87,7 @@ const getEditProduct = async (req, res) => {
     }
 };
 
-const postEditProduct = async (req, res) => {
+const postEditProduct = async (req, res, next) => {
     const { productId, title, imageUrl, price, description } = req.body;
 
     const errors = validationResult(req);
@@ -130,7 +133,7 @@ const postEditProduct = async (req, res) => {
     res.redirect("/admin/products");
 };
 
-const postDeleteProduct = async (req, res) => {
+const postDeleteProduct = async (req, res, next) => {
     const { productId } = req.params;
 
     try {
@@ -144,7 +147,7 @@ const postDeleteProduct = async (req, res) => {
     res.redirect("/admin/products");
 };
 
-const getProducts = async (req, res) => {
+const getProducts = async (req, res, next) => {
     try {
         const products = await Product.find({ userId: req.user._id });
 

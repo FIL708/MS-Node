@@ -8,7 +8,6 @@ const postProductValidator = checkSchema({
     },
     price: { isFloat: true },
     description: { trim: true, isLength: { options: { min: 5, max: 500 } } },
-    imageUrl: { isURL: true },
 });
 
 module.exports = { postProductValidator };

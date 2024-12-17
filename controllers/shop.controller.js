@@ -2,7 +2,7 @@ const Product = require("../models/product.model");
 const log = require("../utils/logger");
 const Order = require("../models/order");
 
-const getProducts = async (req, res) => {
+const getProducts = async (req, res, next) => {
     try {
         const products = await Product.find().populate("userId");
 
@@ -19,7 +19,7 @@ const getProducts = async (req, res) => {
     }
 };
 
-const getProduct = async (req, res) => {
+const getProduct = async (req, res, next) => {
     const { productId } = req.params;
 
     try {
@@ -38,7 +38,7 @@ const getProduct = async (req, res) => {
     }
 };
 
-const getIndex = async (req, res) => {
+const getIndex = async (req, res, next) => {
     try {
         const products = await Product.find();
 
@@ -55,10 +55,12 @@ const getIndex = async (req, res) => {
     }
 };
 
-const getCart = async (req, res) => {
+const getCart = async (req, res, next) => {
     const { user } = req;
+
     try {
         const { cart } = await user.populate("cart.items.productId");
+        
         const productsInCart = cart.items;
 
         res.render("shop/cart", {
@@ -74,7 +76,7 @@ const getCart = async (req, res) => {
     }
 };
 
-const postCart = async (req, res) => {
+const postCart = async (req, res, next) => {
     const { productId } = req.body;
     const { user } = req;
 
@@ -92,7 +94,7 @@ const postCart = async (req, res) => {
     }
 };
 
-const postCartDeleteItem = async (req, res) => {
+const postCartDeleteItem = async (req, res, next) => {
     const { productId } = req.params;
     const { user } = req;
 
@@ -108,7 +110,7 @@ const postCartDeleteItem = async (req, res) => {
     }
 };
 
-const getOrders = async (req, res) => {
+const getOrders = async (req, res, next) => {
     const { user } = req;
     try {
         const orders = await Order.find({ "user.userId": user._id });
@@ -127,7 +129,7 @@ const getOrders = async (req, res) => {
     }
 };
 
-const postOrder = async (req, res) => {
+const postOrder = async (req, res, next) => {
     const { user } = req;
 
     try {
