@@ -13,7 +13,7 @@ const getAddProduct = async (req, res) => {
     });
 };
 
-const postAddProduct = async (req, res) => {
+const postAddProduct = async (req, res, next) => {
     const { session, body } = req;
     const { title, price, description, imageUrl } = body;
     const errors = validationResult(req);
@@ -84,7 +84,7 @@ const getEditProduct = async (req, res) => {
     }
 };
 
-const postEditProduct = async (req, res) => {
+const postEditProduct = async (req, res, next) => {
     const { productId, title, imageUrl, price, description } = req.body;
 
     const errors = validationResult(req);
@@ -130,7 +130,7 @@ const postEditProduct = async (req, res) => {
     res.redirect("/admin/products");
 };
 
-const postDeleteProduct = async (req, res) => {
+const postDeleteProduct = async (req, res, next) => {
     const { productId } = req.params;
 
     try {
@@ -144,7 +144,7 @@ const postDeleteProduct = async (req, res) => {
     res.redirect("/admin/products");
 };
 
-const getProducts = async (req, res) => {
+const getProducts = async (req, res, next) => {
     try {
         const products = await Product.find({ userId: req.user._id });
 

@@ -16,7 +16,7 @@ const getLogin = (req, res) => {
     });
 };
 
-const postLogin = async (req, res) => {
+const postLogin = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
@@ -65,7 +65,7 @@ const postLogin = async (req, res) => {
     }
 };
 
-const postLogout = async (req, res) => {
+const postLogout = async (req, res, next) => {
     try {
         await req.session.destroy();
         res.redirect("/");
@@ -77,7 +77,7 @@ const postLogout = async (req, res) => {
     }
 };
 
-const getSignup = (req, res) => {
+const getSignup = (req, res, next) => {
     res.render("auth/signup", {
         path: "/signup",
         pageTitle: "Sign Up",
@@ -87,7 +87,7 @@ const getSignup = (req, res) => {
     });
 };
 
-const postSignup = async (req, res) => {
+const postSignup = async (req, res, next) => {
     const { email, password, confirmPassword } = req.body;
     try {
         const errors = validationResult(req);
@@ -135,7 +135,7 @@ const getReset = (req, res) => {
     });
 };
 
-const postReset = (req, res) => {
+const postReset = (req, res, next) => {
     const { email } = req.body;
     randomBytes(32, (error, buffer) => {
         if (error) {
@@ -177,7 +177,7 @@ const postReset = (req, res) => {
     });
 };
 
-const getNewPassword = async (req, res) => {
+const getNewPassword = async (req, res, next) => {
     const { token } = req.params;
     try {
         const user = await User.findOne({
@@ -200,7 +200,7 @@ const getNewPassword = async (req, res) => {
     }
 };
 
-const postNewPassword = async (req, res) => {
+const postNewPassword = async (req, res, next) => {
     const { userId, password, passwordToken } = req.body;
 
     try {
