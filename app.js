@@ -41,7 +41,7 @@ app.use(flash());
 
 app.use(async (req, res, next) => {
     const { session } = req;
-    if (req.session.user?._id) {
+    if (!req.session.user) {
         return next();
     }
     try {
