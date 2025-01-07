@@ -3,12 +3,14 @@ const log = require("../utils/logger");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "../images/");
+        cb(null, "./images/");
     },
     filename: (req, file, cb) => {
-        const { fieldname, mimetype } = file;
-        const prefix = Date.now() + "-" + Math.round(Math.random() * 1E9);
-        const newName = `${prefix}-${fieldname}.${mimetype}`;
+        const { mimetype } = file;
+        const ext = mimetype.split("/")[1];
+        const uuid = crypto.randomUUID();
+        const newName = `${uuid}.${ext}`;
+
         cb(null, newName);
     },
 });
@@ -24,8 +26,10 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage: storage, fileFilter: fileFilter });
 
-module.exports = (field) => {
+const uploadImageMiddleware = (field) => {
     return (req, res, next) => {
+        console.log("body", req.body);
+
         const uploadSingle = upload.single(field);
 
         uploadSingle(req, res, (error) => {
@@ -33,8 +37,9 @@ module.exports = (field) => {
                 log(error, "error");
                 return res.redirect("/500");
             }
-
+            next();
         });
-        next();
     };
 };
+
+module.exports = uploadImageMiddleware;

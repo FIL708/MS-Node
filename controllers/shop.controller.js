@@ -1,3 +1,7 @@
+const fs = require("fs");
+const path = require("path");
+const PDFDocument = require("pdfkit");
+
 const Product = require("../models/product.model");
 const log = require("../utils/logger");
 const Order = require("../models/order");
@@ -60,7 +64,7 @@ const getCart = async (req, res, next) => {
 
     try {
         const { cart } = await user.populate("cart.items.productId");
-        
+
         const productsInCart = cart.items;
 
         res.render("shop/cart", {
@@ -155,6 +159,66 @@ const postOrder = async (req, res, next) => {
     }
 };
 
+const getInvoice = async (req, res, next) => {
+    const { orderId } = req.params;
+
+    try {
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            return next(new Error("No order found."));
+        }
+
+        if (order.user.userId.toString() !== req.user._id.toString()) {
+            return next(new Error("Unauthorized."));
+        }
+
+        const invoiceName = "invoice-" + orderId + ".pdf";
+        const invoicePath = path.join("data", "invoices", invoiceName);
+
+        const pdfDoc = new PDFDocument();
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+            "Content-Disposition",
+            'inline; filename="' + invoiceName + '"'
+        );
+
+        pdfDoc.pipe(fs.createWriteStream(invoicePath));
+
+        pdfDoc.pipe(res);
+
+        pdfDoc.fontSize(26).text("Invoice", {
+            align: "center",
+        });
+        pdfDoc.fontSize(12).text("----------------", { align: "center" });
+
+        let totalPrice = 0;
+
+        order.products.forEach((prod) => {
+            totalPrice += prod.quantity * prod.product.price;
+
+            pdfDoc
+                .fontSize(14)
+                .text(
+                    prod.product.title +
+                        " - " +
+                        prod.quantity +
+                        " x " +
+                        "$" +
+                        prod.product.price
+                );
+        });
+        pdfDoc.text("---");
+        pdfDoc.text("Total Price: $" + totalPrice);
+
+        pdfDoc.end();
+    } catch (error) {
+        log(error, "error");
+        return next(error);
+    }
+};
+
 module.exports = {
     getProducts,
     getIndex,
@@ -164,4 +228,5 @@ module.exports = {
     getOrders,
     getProduct,
     postOrder,
+    getInvoice,
 };

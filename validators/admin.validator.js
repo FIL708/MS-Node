@@ -2,12 +2,12 @@ const { checkSchema } = require("express-validator");
 
 const postProductValidator = checkSchema({
     title: {
-        trim: true,
-        isAlphanumeric: true,
+        isString: true,
         isLength: { options: { min: 3 } },
+        trim: true,
     },
     price: { isFloat: true },
-    description: { trim: true, isLength: { options: { min: 5, max: 500 } } },
+    description: { isLength: { options: { min: 5, max: 500 }, trim: true } },
 });
 
 module.exports = { postProductValidator };

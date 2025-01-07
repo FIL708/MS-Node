@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 const Product = require("../models/product.model");
 const log = require("../utils/logger");
+const { deleteFile } = require("../utils/file");
 
 const getAddProduct = async (req, res) => {
     res.render("admin/edit-product", {
@@ -14,11 +15,26 @@ const getAddProduct = async (req, res) => {
 };
 
 const postAddProduct = async (req, res, next) => {
-    console.log('HIIIIIIT');
-    
     const { session, body } = req;
     const { title, price, description } = body;
-    const imageUrl = req.file;
+    const image = req.file;
+
+    if (!image) {
+        return res.status(422).render("admin/edit-product", {
+            pageTitle: "Add Product",
+            path: "/admin/add-product",
+            editing: false,
+            hasErrors: true,
+            product: {
+                title: title,
+                price: price,
+                description: description,
+            },
+            errorMsg: "Attached file is not an image.",
+            validationErrors: [],
+        });
+    }
+
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -31,7 +47,6 @@ const postAddProduct = async (req, res, next) => {
                 title,
                 price,
                 description,
-                imageUrl,
             },
             errorMsg: errors.array()[0].msg,
             validationErrors: errors.array(),
@@ -42,9 +57,12 @@ const postAddProduct = async (req, res, next) => {
         title,
         price,
         description,
-        imageUrl,
         userId: session.user._id,
     });
+
+    if (image) {
+        product.imageUrl = image.path;
+    }
 
     try {
         await product.save();
@@ -88,7 +106,8 @@ const getEditProduct = async (req, res, next) => {
 };
 
 const postEditProduct = async (req, res, next) => {
-    const { productId, title, imageUrl, price, description } = req.body;
+    const { productId, title, price, description } = req.body;
+    const image = req.file;
 
     const errors = validationResult(req);
 
@@ -102,7 +121,6 @@ const postEditProduct = async (req, res, next) => {
                 title,
                 price,
                 description,
-                imageUrl,
                 _id: productId,
             },
             errorMsg: errors.array()[0].msg,
@@ -118,9 +136,12 @@ const postEditProduct = async (req, res, next) => {
         }
 
         product.title = title;
-        product.imageUrl = imageUrl;
         product.price = price;
         product.description = description;
+        if (image) {
+            deleteFile(product.imageUrl);
+            product.imageUrl = image.path;
+        }
 
         await product.save();
     } catch (error) {
@@ -137,6 +158,13 @@ const postDeleteProduct = async (req, res, next) => {
     const { productId } = req.params;
 
     try {
+        const product = await Product.findById(productId);
+        if (!product) {
+            throw new Error("Product not found");
+        }
+
+        deleteFile(product.imageUrl);
+
         await Product.deleteOne({ _id: productId, userId: req.user._id });
     } catch (error) {
         log(error, "error");

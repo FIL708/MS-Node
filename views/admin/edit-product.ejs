@@ -28,16 +28,6 @@
                     />
                 </div>
 
-                <!-- <div class="form-control">
-                    <label for="imageUrl">Image URL</label>
-                    <input
-                        type="text"
-                        name="imageUrl"
-                        id="imageUrl"
-                        value="<%= (editing || hasErrors) ? product.imageUrl : '' %>"
-                        class="<%= validationErrors.find(e => e.path === 'imageUrl') ? "invalid" : "" %>"
-                    />
-                </div> -->
                 <div class="form-control">
                     <label for="image">Image</label>
                     <input
@@ -65,7 +55,7 @@
                         type="text"
                         name="description"
                         id="description"
-                        class="<%= validationErrors.find(e => th === 'description') ? "invalid" : "" %>"
+                        class="<%= validationErrors.find(e => e.path === 'description') ? "invalid" : "" %>"
                     ><%= (editing || hasErrors) ? product.description : '' %></textarea>
                 </div>
                 <% if (editing) { %>

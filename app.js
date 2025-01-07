@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const path = require("path");
 const express = require("express");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
@@ -11,6 +12,7 @@ const routes = require("./routes");
 const { getNotFound, get500 } = require("./controllers/error.controller");
 const log = require("./utils/logger");
 const User = require("./models/user.model");
+const multer = require("multer");
 
 const { PORT, MONGO_URL } = process.env;
 
@@ -20,12 +22,41 @@ const store = new MongoDBStore({ uri: MONGO_URL, collection: "sessions" });
 
 const csrfProtection = csrf();
 
+const fileStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "./images");
+    },
+    filename: (req, file, cb) => {
+        cb(null, new Date().getTime() + "-" + file.originalname);
+    },
+});
+
+const fileFilter = (req, file, cb) => {
+    if (
+        file.mimetype === "image/png" ||
+        file.mimetype === "image/jpg" ||
+        file.mimetype === "image/jpeg"
+    ) {
+        cb(null, true);
+    } else {
+        cb(null, false);
+    }
+};
+
 app.set("view engine", "ejs");
 app.set("views", "views");
 
-app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use(
+    multer({
+        storage: fileStorage,
+        fileFilter,
+    }).single("image")
+);
+
 app.use(express.static("public"));
+app.use("/images", express.static("images"));
 
 app.use(
     session({
@@ -37,6 +68,7 @@ app.use(
 );
 
 app.use(csrfProtection);
+
 app.use(flash());
 
 app.use((req, res, next) => {
@@ -71,7 +103,7 @@ app.get("/500", get500);
 
 app.use(getNotFound);
 
-app.use((req, res) => {
+app.use((err, req, res) => {
     res.status(500).render("500", {
         pageTitle: "Error!",
         path: "/500",
