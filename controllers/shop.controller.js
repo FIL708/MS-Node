@@ -6,14 +6,29 @@ const Product = require("../models/product.model");
 const log = require("../utils/logger");
 const Order = require("../models/order");
 
+const ITEMS_PER_PAGE = 1;
+
 const getProducts = async (req, res, next) => {
+    const page = +req.query.page || 1;
+
     try {
-        const products = await Product.find().populate("userId");
+        const numberOfProducts = await Product.find().countDocuments();
+
+        const products = await Product.find()
+            .skip((page - 1) * ITEMS_PER_PAGE)
+            .limit(ITEMS_PER_PAGE);
 
         res.render("shop/products", {
             pageTitle: "Products",
             products,
             path: "/products",
+            pageAmount: numberOfProducts,
+            currentPage: page,
+            hasNextPage: ITEMS_PER_PAGE * page < numberOfProducts,
+            hasPreviousPage: page > 1,
+            nextPage: page + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(numberOfProducts / ITEMS_PER_PAGE),
         });
     } catch (error) {
         log(error, "error");
@@ -43,13 +58,26 @@ const getProduct = async (req, res, next) => {
 };
 
 const getIndex = async (req, res, next) => {
+    const page = +req.query.page || 1;
+
     try {
-        const products = await Product.find();
+        const numberOfProducts = await Product.find().countDocuments();
+
+        const products = await Product.find()
+            .skip((page - 1) * ITEMS_PER_PAGE)
+            .limit(ITEMS_PER_PAGE);
 
         res.render("shop/index", {
             pageTitle: "Shop",
             products,
             path: "/",
+            pageAmount: numberOfProducts,
+            currentPage: page,
+            hasNextPage: ITEMS_PER_PAGE * page < numberOfProducts,
+            hasPreviousPage: page > 1,
+            nextPage: page + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(numberOfProducts / ITEMS_PER_PAGE),
         });
     } catch (error) {
         log(error, "error");
