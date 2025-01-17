@@ -5,7 +5,7 @@ const {
     postAddProduct,
     getEditProduct,
     postEditProduct,
-    postDeleteProduct,
+    deleteProduct,
 } = require("../controllers/admin.controller");
 const isAuth = require("../middleware/is-auth.middleware");
 const { postProductValidator } = require("../validators/admin.validator");
@@ -16,5 +16,5 @@ module.exports = Router()
     .post("/add-product", postProductValidator, postAddProduct)
     .get("/edit-product/:productId", getEditProduct)
     .post("/edit-product", postProductValidator, postEditProduct)
-    .post("/delete-product/:productId", postDeleteProduct)
+    .delete("/product/:productId", deleteProduct)
     .get("/products", getProducts);

@@ -154,7 +154,7 @@ const postEditProduct = async (req, res, next) => {
     res.redirect("/admin/products");
 };
 
-const postDeleteProduct = async (req, res, next) => {
+const deleteProduct = async (req, res, next) => {
     const { productId } = req.params;
 
     try {
@@ -166,13 +166,12 @@ const postDeleteProduct = async (req, res, next) => {
         deleteFile(product.imageUrl);
 
         await Product.deleteOne({ _id: productId, userId: req.user._id });
+
+        res.status(200).json({ message: "Product successfully deleted." });
     } catch (error) {
         log(error, "error");
-        const err = new Error(error);
-        err.httpStatusCode = 500;
-        return next(err);
+        res.status(500).json({ message: "Deleting product failed" });
     }
-    res.redirect("/admin/products");
 };
 
 const getProducts = async (req, res, next) => {
@@ -198,6 +197,6 @@ module.exports = {
     postAddProduct,
     getEditProduct,
     postEditProduct,
-    postDeleteProduct,
+    deleteProduct,
     getProducts,
 };
