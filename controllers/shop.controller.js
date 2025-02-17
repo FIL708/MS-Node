@@ -6,7 +6,7 @@ const Product = require("../models/product.model");
 const log = require("../utils/logger");
 const Order = require("../models/order");
 
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 6;
 
 const getProducts = async (req, res, next) => {
     const page = +req.query.page || 1;
@@ -247,6 +247,33 @@ const getInvoice = async (req, res, next) => {
     }
 };
 
+const getCheckout = async (req, res, next) => {
+    const { user } = req;
+
+    try {
+        const { cart } = await user.populate("cart.items.productId");
+
+        const products = cart.items;
+
+        const totalSum = products.reduce(
+            (acc, curr) => acc + curr.productId.price * curr.quantity,
+            0
+        );
+
+        res.render("shop/checkout", {
+            path: "/checkout",
+            pageTitle: "Checkout",
+            products,
+            totalSum,
+        });
+    } catch (error) {
+        log(error, "error");
+        const err = new Error(error);
+        err.httpStatusCode = 500;
+        return next(err);
+    }
+};
+
 module.exports = {
     getProducts,
     getIndex,
@@ -257,4 +284,5 @@ module.exports = {
     getProduct,
     postOrder,
     getInvoice,
+    getCheckout,
 };

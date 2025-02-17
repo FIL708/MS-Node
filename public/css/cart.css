@@ -23,3 +23,9 @@
   margin: 0;
 }
 
+.cart__image {
+  width: 10rem;
+  height: 10rem;
+  object-fit: cover;
+}
+
