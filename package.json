@@ -2,17 +2,14 @@
   "name": "ms-node",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/server.js"
+    "build:frontend": "cd frontend && npm i",
+    "build:server": "cd server && npm i",
+    "start:frontend": "cd frontend && npm run start",
+    "start:server": "cd server && npm run start"
   },
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.21.2"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.9"
-  }
+  "license": "ISC"
 }
