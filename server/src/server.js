@@ -4,10 +4,11 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const multer = require("multer");
 const cors = require("cors");
+const { createHandler } = require("graphql-http/lib/use/express");
 
+const graphQlSchema = require("./graphql/schema");
+const graphQlResolvers = require("./graphql/resolvers");
 require("dotenv").config();
-
-const routes = require("./routes");
 
 const app = express();
 
@@ -57,9 +58,12 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(cors({ origin: "http://localhost:3000"}));
+app.use(cors({ origin: "http://localhost:3000" }));
 
-app.use(routes);
+app.all(
+    "/graphql",
+    createHandler({ schema: graphQlSchema, rootValue: graphQlResolvers })
+);
 
 app.use((error, req, res, next) => {
     console.log(error);
@@ -72,16 +76,8 @@ app.use((error, req, res, next) => {
 mongoose
     .connect(process.env.MONGO_URL)
     .then((_) => {
-        console.log("Connected!");
-
-        const server = app.listen(8080, () => {
+        app.listen(8080, () => {
             console.log("Server listen on 8080");
         });
-
-        const io = require("./socket").init(server);
-        io.on('connection', socket => {
-            console.log('Socket connected');
-            
-        })
     })
     .catch((err) => console.log(err));
