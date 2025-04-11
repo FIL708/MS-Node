@@ -2,8 +2,6 @@ const { validationResult } = require("express-validator");
 const Post = require("../models/post");
 const User = require("../models/user");
 
-const io = require("../socket");
-
 const { clearImage } = require("../utils");
 
 const getPosts = async (req, res, next) => {
