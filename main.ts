@@ -1,11 +1,18 @@
-const text = "This is a test - and it should be stored in a file!";
+const handler = async (req: Request) => {
+    console.log("Method:", req.method);
 
-const encoder = new TextEncoder();
+    const url = new URL(req.url);
+    console.log("Path:", url.pathname);
+    console.log("Query parameters:", url.searchParams);
 
-const data = encoder.encode(text);
+    console.log("Headers:", req.headers);
 
-Deno.writeFile("message.txt", data)
-    .then(() => {
-        console.log("Stored!");
-    })
-    .catch((error) => console.log(error));
+    if (req.body) {
+        const body = await req.text();
+        console.log("Body:", body);
+    }
+
+    return new Response("Hello, World!");
+};
+
+Deno.serve({ port: 3000 }, handler);
