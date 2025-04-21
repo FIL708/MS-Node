@@ -1,18 +1,10 @@
-const handler = async (req: Request) => {
-    console.log("Method:", req.method);
+import { Application } from "@oak/oak";
 
-    const url = new URL(req.url);
-    console.log("Path:", url.pathname);
-    console.log("Query parameters:", url.searchParams);
+import router from "./routes/todos.ts";
 
-    console.log("Headers:", req.headers);
+const app = new Application();
 
-    if (req.body) {
-        const body = await req.text();
-        console.log("Body:", body);
-    }
+app.use(router.routes());
+app.use(router.allowedMethods());
 
-    return new Response("Hello, World!");
-};
-
-Deno.serve({ port: 3000 }, handler);
+await app.listen({ port: 3000 });
